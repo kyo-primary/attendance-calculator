@@ -159,7 +159,7 @@ pytest tests/
 ## ファイル構成
 
 ```
-portfolio-1/
+attendance-calculator/
 ├── main.py                          # 起動エントリポイント
 ├── attendance_calculator.py         # 計算ロジック（関数・データクラス）
 ├── attendance_gui.py                # Tkinter GUI処理
