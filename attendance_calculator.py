@@ -32,23 +32,23 @@ def parse_time_to_minutes(time_str: str) -> int:
     if ":" in s:
         parts = s.split(":")
         if len(parts) != 2:
-            raise InvalidTimeError(f"不正な時間フォーマットです: '{time_str}'")
+            raise InvalidTimeError(f"時間は「2:30」または「2」の形式で入力してください（入力値: '{time_str}'）")
         h_str, m_str = parts
         if not h_str.lstrip("-").isdigit() or not m_str.isdigit():
-            raise InvalidTimeError(f"不正な時間フォーマットです: '{time_str}'")
+            raise InvalidTimeError(f"時間は「2:30」または「2」の形式で入力してください（入力値: '{time_str}'）")
         hours = int(h_str)
         minutes = int(m_str)
         if minutes < 0 or minutes >= 60:
-            raise InvalidTimeError(f"分は0〜59の範囲で入力してください: '{time_str}'")
+            raise InvalidTimeError(f"分は 0〜59 の範囲で入力してください（入力値: '{time_str}'）")
         if hours < 0:
-            raise InvalidTimeError(f"負の時間は入力できません: '{time_str}'")
+            raise InvalidTimeError(f"マイナスの時間は入力できません（入力値: '{time_str}'）")
         return hours * 60 + minutes
     else:
         if not s.lstrip("-").isdigit():
-            raise InvalidTimeError(f"不正な時間フォーマットです: '{time_str}'")
+            raise InvalidTimeError(f"時間は「2:30」または「2」の形式で入力してください（入力値: '{time_str}'）")
         hours = int(s)
         if hours < 0:
-            raise InvalidTimeError(f"負の時間は入力できません: '{time_str}'")
+            raise InvalidTimeError(f"マイナスの時間は入力できません（入力値: '{time_str}'）")
         return hours * 60
 
 
@@ -78,9 +78,9 @@ def parse_days(value: str) -> float:
     try:
         days = float(s)
     except ValueError:
-        raise InvalidTimeError(f"日数は数値で入力してください: '{value}'")
+        raise InvalidTimeError(f"日数は半角数字で入力してください（入力値: '{value}'）")
     if days < 0:
-        raise InvalidTimeError(f"負の日数は入力できません: '{value}'")
+        raise InvalidTimeError(f"マイナスの日数は入力できません（入力値: '{value}'）")
     return days
 
 
@@ -126,17 +126,17 @@ def generate_comment(
     parts = []
 
     if total_shortage_minutes > 0:
-        parts.append(f"不足時間が {minutes_to_hhmm(total_shortage_minutes)} あります。")
+        parts.append(
+            f"不足時間が{minutes_to_hhmm(total_shortage_minutes)}あります。勤怠状況を確認してください。"
+        )
 
     if excess_overtime_minutes > 0:
-        parts.append(f"みなし残業を {minutes_to_hhmm(excess_overtime_minutes)} 超過しています。")
-    else:
-        parts.append("残業はみなしの範囲内です。")
+        parts.append(f"みなし残業を{minutes_to_hhmm(excess_overtime_minutes)}超過しています。")
 
     if late_night_minutes > 0:
-        parts.append(f"深夜労働が {minutes_to_hhmm(late_night_minutes)} あります（割増対象の可能性あり）。")
+        parts.append(f"深夜労働が{minutes_to_hhmm(late_night_minutes)}あります。")
 
-    return " / ".join(parts)
+    return "\n".join(parts) if parts else "特記事項はありません。"
 
 
 def calculate(inputs: AttendanceInput) -> AttendanceResult:

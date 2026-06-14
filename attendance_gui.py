@@ -15,15 +15,17 @@ from attendance_calculator import (
 )
 
 # --- 定数 ---
+VERSION = "v1.0.0"
 APP_TITLE = "勤怠計算ツール（目安）"
 WIN_WIDTH = 560
-WIN_HEIGHT = 660
+WIN_HEIGHT = 700
 BG = "#F5F7FA"
 ACCENT = "#4A7FBF"
 ACCENT_LIGHT = "#D6E4F5"
 BTN_CLEAR = "#E0E0E0"
 TEXT_FG = "#2C2C2C"
 ERROR_FG = "#C0392B"
+COMMENT_OK_FG = "#27AE60"
 RESULT_BG = "#EAF2FB"
 FONT_FAMILY = "Yu Gothic UI"
 PAD = 12
@@ -117,7 +119,7 @@ class AttendanceApp(tk.Tk):
                 row,
                 textvariable=var,
                 font=(FONT_FAMILY, 10),
-                width=10,
+                width=12,
                 relief="solid",
                 bd=1,
             )
@@ -198,7 +200,7 @@ class AttendanceApp(tk.Tk):
 
         for key, label in result_rows:
             row = tk.Frame(result_frame, bg=RESULT_BG, bd=0)
-            row.pack(fill="x", pady=2)
+            row.pack(fill="x", pady=3)
 
             tk.Label(
                 row,
@@ -227,28 +229,40 @@ class AttendanceApp(tk.Tk):
 
         # コメント欄
         self._comment_var = tk.StringVar(value="")
-        comment_frame = tk.Frame(result_frame, bg=BG)
-        comment_frame.pack(fill="x", pady=(8, 0))
+        ttk.Separator(result_frame, orient="horizontal").pack(fill="x", pady=(6, 0))
+        comment_frame = tk.Frame(result_frame, bg=RESULT_BG)
+        comment_frame.pack(fill="x", pady=(6, 2))
 
         tk.Label(
             comment_frame,
             text="コメント:",
             font=(FONT_FAMILY, 9, "bold"),
-            bg=BG,
+            bg=RESULT_BG,
             fg=TEXT_FG,
+            padx=6,
         ).pack(anchor="w")
 
         self._comment_lbl = tk.Label(
             comment_frame,
             textvariable=self._comment_var,
             font=(FONT_FAMILY, 9),
-            bg=BG,
+            bg=RESULT_BG,
             fg=TEXT_FG,
             wraplength=WIN_WIDTH - PAD * 6,
             justify="left",
             anchor="w",
+            padx=6,
         )
-        self._comment_lbl.pack(anchor="w", pady=(2, 0))
+        self._comment_lbl.pack(anchor="w", pady=(2, 4))
+
+        tk.Label(
+            self,
+            text=VERSION,
+            font=(FONT_FAMILY, 8),
+            bg=BG,
+            fg="#AAAAAA",
+            anchor="e",
+        ).pack(fill="x", padx=PAD * 2, pady=(4, 6))
 
     # ------------------------------------------------------------------
     # イベントハンドラ
@@ -280,6 +294,10 @@ class AttendanceApp(tk.Tk):
             minutes_to_hhmm(result.late_night_minutes)
         )
         self._comment_var.set(result.comment)
+        if result.comment == "特記事項はありません。":
+            self._comment_lbl.configure(fg=COMMENT_OK_FG)
+        else:
+            self._comment_lbl.configure(fg=ERROR_FG)
 
     def _on_clear(self):
         defaults = {
@@ -298,6 +316,7 @@ class AttendanceApp(tk.Tk):
             var.set("--:--")
 
         self._comment_var.set("")
+        self._comment_lbl.configure(fg=TEXT_FG)
         self._error_var.set("")
 
     # ------------------------------------------------------------------

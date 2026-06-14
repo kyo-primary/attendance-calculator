@@ -202,7 +202,7 @@ class TestCalculate:
 
         assert result.total_shortage_minutes == 0
         assert result.excess_overtime_minutes == 0
-        assert "みなし" in result.comment
+        assert result.comment == "特記事項はありません。"
 
 
 # ------------------------------------------------------------------
@@ -212,7 +212,7 @@ class TestCalculate:
 class TestGenerateComment:
     def test_all_zero(self):
         comment = generate_comment(0, 0, 0)
-        assert "みなし" in comment
+        assert comment == "特記事項はありません。"
 
     def test_shortage_appears(self):
         comment = generate_comment(480, 0, 0)
